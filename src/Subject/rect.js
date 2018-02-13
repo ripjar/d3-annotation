@@ -35,6 +35,13 @@ export default ({ subjectData, type }) => {
 
     handles = type.mapHandles(rHandles)
   }
-  rect.attrs["fill-opacity"] = 0.1
+
+  if (subjectData.filled) {
+    rect.attrs["fill-opacity"] = 0.1;
+    rect.attrs.fill = type.annotation._color;
+  } else {
+    rect.attrs["fill-opacity"] = 0;
+  }
+
   return { components: [rect], handles }
 }

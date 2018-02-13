@@ -69,6 +69,7 @@ export default function annotation() {
       const a = select(this)
 
       a.attr("class", "annotation")
+      a.attr("id", d.id);
 
       newWithClass(a, [d], "g", "annotation-connector")
       newWithClass(a, [d], "g", "annotation-subject")

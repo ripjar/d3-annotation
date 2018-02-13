@@ -39,7 +39,12 @@ export default ({ subjectData, type }) => {
     handles = type.mapHandles(cHandles)
   }
 
-  c.attrs["fill-opacity"] = 0
+  if (subjectData.filled) {
+    c.attrs["fill-opacity"] = 0.1;
+    c.attrs.fill = type.annotation._color;
+  } else {
+    c.attrs["fill-opacity"] = 0;
+  }
 
   return { components: [c], handles }
 }

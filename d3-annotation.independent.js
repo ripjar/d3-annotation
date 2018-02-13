@@ -967,7 +967,12 @@ var subjectCircle = (function (_ref) {
     handles = type.mapHandles(cHandles);
   }
 
-  c.attrs["fill-opacity"] = 0;
+  if (subjectData.filled) {
+    c.attrs["fill-opacity"] = 0.1;
+    c.attrs.fill = type.annotation._color;
+  } else {
+    c.attrs["fill-opacity"] = 0;
+  }
 
   return { components: [c], handles: handles };
 });
@@ -1008,7 +1013,14 @@ var subjectRect = (function (_ref) {
 
     handles = type.mapHandles(rHandles);
   }
-  rect.attrs["fill-opacity"] = 0.1;
+
+  if (subjectData.filled) {
+    rect.attrs["fill-opacity"] = 0.1;
+    rect.attrs.fill = type.annotation._color;
+  } else {
+    rect.attrs["fill-opacity"] = 0;
+  }
+
   return { components: [rect], handles: handles };
 });
 
@@ -1884,6 +1896,7 @@ function annotation() {
       var a = d3Selection.select(this);
 
       a.attr("class", "annotation");
+      a.attr("id", d.id);
 
       newWithClass(a, [d], "g", "annotation-connector");
       newWithClass(a, [d], "g", "annotation-subject");
