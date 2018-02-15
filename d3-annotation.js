@@ -275,8 +275,9 @@ var Annotation = function () {
       var x = _ref2.x,
           y = _ref2.y;
 
-      this._dx = x;
-      this._dy = y;
+      var scale = this.type.transform[0];
+      this._dx = this._dx + (x - this._dx) * scale;
+      this._dy = this._dy + (y - this._dy) * scale;
       this.updateOffset();
     }
   }, {
@@ -951,7 +952,7 @@ var subjectCircle = (function (_ref) {
     });
 
     var updateRadius = function updateRadius(attr) {
-      var r = subjectData[attr] + d3Selection.event.dx * Math.sqrt(2);
+      var r = subjectData[attr] + d3Selection.event.dx * Math.sqrt(2) * type.transform[0];
       subjectData[attr] = r;
       type.redrawSubject();
       type.redrawConnector();
@@ -998,13 +999,13 @@ var subjectRect = (function (_ref) {
 
   if (type.editMode) {
     var updateWidth = function updateWidth() {
-      subjectData.width = d3Selection.event.x;
+      subjectData.width = subjectData.width + d3Selection.event.dx * type.transform[0];
       type.redrawSubject();
       type.redrawConnector();
     };
 
     var updateHeight = function updateHeight() {
-      subjectData.height = d3Selection.event.y;
+      subjectData.height = subjectData.height + d3Selection.event.dy * type.transform[0];
       type.redrawSubject();
       type.redrawConnector();
     };
@@ -1187,7 +1188,8 @@ var Type = function () {
         editMode = _ref.editMode,
         dispatcher = _ref.dispatcher,
         notePadding = _ref.notePadding,
-        accessors = _ref.accessors;
+        accessors = _ref.accessors,
+        transform = _ref.transform;
     classCallCheck(this, Type);
 
     this.a = a;
@@ -1214,6 +1216,8 @@ var Type = function () {
     if (accessors && annotation.data) {
       this.init(accessors);
     }
+
+    this.transform = transform;
   }
 
   createClass(Type, [{
@@ -1491,7 +1495,8 @@ var Type = function () {
     key: "setPosition",
     value: function setPosition() {
       var position = this.annotation.position;
-      this.a.attr("transform", "translate(" + position.x + ", " + position.y + ")");
+      var matrix = [1 / this.transform[0], 0, 0, 1 / this.transform[0], position.x, position.y];
+      this.a.attr("transform", "matrix(" + matrix.join() + ")");
     }
   }, {
     key: "setOffset",
@@ -1858,7 +1863,8 @@ function annotation() {
       textWrap = void 0,
       notePadding = void 0,
       annotationDispatcher = d3Dispatch.dispatch("subjectover", "subjectout", "subjectclick", "connectorover", "connectorout", "connectorclick", "noteover", "noteout", "noteclick", "dragend", "dragstart"),
-      sel = void 0;
+      sel = void 0,
+      transform = [1, 0, 0, 1, 0, 0];
 
   var annotation = function annotation(selection) {
     sel = selection;
@@ -1909,7 +1915,8 @@ function annotation() {
         notePadding: notePadding,
         editMode: editMode,
         dispatcher: annotationDispatcher,
-        accessors: accessors
+        accessors: accessors,
+        transform: transform
       });
       d.type.draw();
       d.type.drawText && d.type.drawText();
@@ -2070,6 +2077,12 @@ function annotation() {
   annotation.on = function () {
     var value = annotationDispatcher.on.apply(annotationDispatcher, arguments);
     return value === annotationDispatcher ? annotation : value;
+  };
+
+  annotation.transform = function (_) {
+    if (!arguments.length) return transform;
+    transform = _;
+    return annotation;
   };
 
   return annotation;

@@ -17,7 +17,7 @@ export default ({ subjectData, type }) => {
     })
 
     const updateRadius = attr => {
-      const r = subjectData[attr] + event.dx * Math.sqrt(2)
+      const r = subjectData[attr] + event.dx * Math.sqrt(2) * type.transform[0]
       subjectData[attr] = r
       type.redrawSubject()
       type.redrawConnector()

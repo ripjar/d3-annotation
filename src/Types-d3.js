@@ -20,7 +20,7 @@ import subjectThreshold from "./Subject/threshold"
 import subjectBadge from "./Subject/badge"
 
 export class Type {
-  constructor({ a, annotation, editMode, dispatcher, notePadding, accessors }) {
+  constructor({ a, annotation, editMode, dispatcher, notePadding, accessors, transform }) {
     this.a = a
 
     this.note =
@@ -50,6 +50,8 @@ export class Type {
     if (accessors && annotation.data) {
       this.init(accessors)
     }
+
+    this.transform = transform
   }
 
   init(accessors) {
@@ -285,7 +287,8 @@ export class Type {
 
   setPosition() {
     const position = this.annotation.position
-    this.a.attr("transform", `translate(${position.x}, ${position.y})`)
+    const matrix = [1/this.transform[0], 0, 0, 1/this.transform[0], position.x, position.y]
+    this.a.attr("transform", `matrix(${matrix.join()})`)
   }
 
   setOffset() {

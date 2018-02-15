@@ -17,13 +17,13 @@ export default ({ subjectData, type }) => {
 
   if (type.editMode) {
     const updateWidth = () => {
-      subjectData.width = event.x
+      subjectData.width = subjectData.width + event.dx * type.transform[0]
       type.redrawSubject()
       type.redrawConnector()
     }
 
     const updateHeight = () => {
-      subjectData.height = event.y
+      subjectData.height = subjectData.height + event.dy * type.transform[0]
       type.redrawSubject()
       type.redrawConnector()
     }

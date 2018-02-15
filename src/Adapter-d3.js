@@ -29,7 +29,8 @@ export default function annotation() {
       "dragend",
       "dragstart"
     ),
-    sel
+    sel,
+    transform = [1, 0, 0, 1, 0, 0]
 
   const annotation = function(selection) {
     sel = selection
@@ -90,7 +91,8 @@ export default function annotation() {
             notePadding,
             editMode,
             dispatcher: annotationDispatcher,
-            accessors
+            accessors,
+            transform
           })
       d.type.draw()
       d.type.drawText && d.type.drawText()
@@ -260,6 +262,12 @@ export default function annotation() {
   annotation.on = function() {
     const value = annotationDispatcher.on.apply(annotationDispatcher, arguments)
     return value === annotationDispatcher ? annotation : value
+  }
+
+  annotation.transform = function(_) {
+    if (!arguments.length) return transform
+    transform = _
+    return annotation
   }
 
   return annotation

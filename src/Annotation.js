@@ -119,8 +119,9 @@ export default class Annotation {
   }
 
   set offset({ x, y }) {
-    this._dx = x
-    this._dy = y
+    const scale = this.type.transform[0];
+    this._dx = this._dx + ((x - this._dx) * scale)
+    this._dy = this._dy + ((y - this._dy) * scale)
     this.updateOffset()
   }
 
