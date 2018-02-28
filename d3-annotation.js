@@ -623,17 +623,21 @@ var arcBuilder = function arcBuilder(_ref2) {
   var data = _ref2.data,
       canvasContext = _ref2.canvasContext,
       className = _ref2.className,
-      classID = _ref2.classID;
+      classID = _ref2.classID,
+      transform = _ref2.transform;
 
 
   var builder = {
     type: 'path',
     className: className,
     classID: classID,
-    data: data
+    data: data,
+    transform: transform
   };
 
-  var arcShape = d3Shape.arc().innerRadius(data.innerRadius || 0).outerRadius(data.outerRadius || data.radius || 2).startAngle(data.startAngle || 0).endAngle(data.endAngle || 2 * Math.PI);
+  var scale = transform ? transform[0] : 1;
+
+  var arcShape = d3Shape.arc().innerRadius(data.innerRadius * scale || 0).outerRadius(data.outerRadius * scale || data.radius * scale || 2 * scale).startAngle(data.startAngle || 0).endAngle(data.endAngle || 2 * Math.PI);
 
   if (canvasContext) {
     arcShape.context(canvasContext);
@@ -696,6 +700,7 @@ var lineSetup = function lineSetup(_ref) {
 
   var annotation = type.annotation;
   var offset = annotation.position;
+  var scale = type.transform ? type.transform[0] : 1;
 
   var x1 = annotation.x - offset.x,
       x2 = x1 + annotation.dx,
@@ -728,6 +733,12 @@ var lineSetup = function lineSetup(_ref) {
       x1 = x2;y1 = y2;
     }
   }
+
+  x1 *= scale;
+  y1 *= scale;
+
+  x2 *= scale;
+  y2 *= scale;
 
   return [[x1, y1], [x2, y2]];
 };
@@ -942,17 +953,19 @@ var subjectCircle = (function (_ref) {
     subjectData.radius = 20;
   }
 
+  var scale = type.transform ? type.transform[0] : 1;
+
   var handles = [];
-  var c = arcBuilder({ data: subjectData, className: "subject" });
+  var c = arcBuilder({ data: subjectData, className: "subject", transform: type.transform });
   if (type.editMode) {
     var h = circleHandles({
-      r1: c.data.outerRadius || c.data.radius,
-      r2: c.data.innerRadius,
+      r1: c.data.outerRadius * scale || c.data.radius * scale,
+      r2: c.data.innerRadius * scale,
       padding: subjectData.radiusPadding
     });
 
     var updateRadius = function updateRadius(attr) {
-      var r = subjectData[attr] + d3Selection.event.dx * Math.sqrt(2) * type.transform[0];
+      var r = subjectData[attr] + d3Selection.event.dx * Math.sqrt(2);
       subjectData[attr] = r;
       type.redrawSubject();
       type.redrawConnector();
@@ -989,28 +1002,30 @@ var subjectRect = (function (_ref) {
     subjectData.height = 100;
   }
 
+  var scale = type.transform ? type.transform[0] : 1;
+
   var handles = [];
   var width = subjectData.width,
       height = subjectData.height;
 
 
-  var data = [[0, 0], [width, 0], [width, height], [0, height], [0, 0]];
-  var rect = lineBuilder({ data: data, className: "subject" });
+  var data = [[0, 0], [width * scale, 0], [width * scale, height * scale], [0, height * scale], [0, 0]];
+  var rect = lineBuilder({ data: data, className: "subject", transform: type.transform });
 
   if (type.editMode) {
     var updateWidth = function updateWidth() {
-      subjectData.width = subjectData.width + d3Selection.event.dx * type.transform[0];
+      subjectData.width = subjectData.width + d3Selection.event.dx;
       type.redrawSubject();
       type.redrawConnector();
     };
 
     var updateHeight = function updateHeight() {
-      subjectData.height = subjectData.height + d3Selection.event.dy * type.transform[0];
+      subjectData.height = subjectData.height + d3Selection.event.dy;
       type.redrawSubject();
       type.redrawConnector();
     };
 
-    var rHandles = [{ x: width, y: height / 2, drag: updateWidth.bind(type) }, { x: width / 2, y: height, drag: updateHeight.bind(type) }];
+    var rHandles = [{ x: width * scale, y: height / 2 * scale, drag: updateWidth.bind(type) }, { x: width / 2 * scale, y: height * scale, drag: updateHeight.bind(type) }];
 
     handles = type.mapHandles(rHandles);
   }
@@ -1503,7 +1518,13 @@ var Type = function () {
     value: function setOffset() {
       if (this.note) {
         var offset = this.annotation.offset;
-        this.note.attr("transform", "translate(" + offset.x + ", " + offset.y + ")");
+        var scale = this.transform[0];
+        var x = offset.x,
+            y = offset.y;
+
+        x *= scale;
+        y *= scale;
+        this.note.attr("transform", "translate(" + x + ", " + y + ")");
       }
     }
   }, {
@@ -1557,8 +1578,9 @@ var Type = function () {
     key: "dragNote",
     value: function dragNote() {
       var offset = this.annotation.offset;
-      offset.x += d3Selection.event.dx;
-      offset.y += d3Selection.event.dy;
+      var scale = this.transform[0];
+      offset.x += d3Selection.event.dx / scale;
+      offset.y += d3Selection.event.dy / scale;
       this.annotation.offset = offset;
     }
   }, {
@@ -1730,12 +1752,12 @@ var d3Badge = customType(Type, {
   disable: ["connector", "note"]
 });
 
-var d3CalloutCircle = customType(d3CalloutElbow, {
+var d3CalloutCircle = customType(d3Callout, {
   className: "callout circle",
   subject: { type: "circle" }
 });
 
-var d3CalloutRect = customType(d3CalloutElbow, {
+var d3CalloutRect = customType(d3Callout, {
   className: "callout rect",
   subject: { type: "rect" }
 });

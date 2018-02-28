@@ -7,17 +7,19 @@ export default ({ subjectData, type }) => {
     subjectData.radius = 20
   }
 
+  const scale = type.transform ? type.transform[0] : 1
+
   let handles = []
-  const c = arcBuilder({ data: subjectData, className: "subject" })
+  const c = arcBuilder({ data: subjectData, className: "subject", transform: type.transform })
   if (type.editMode) {
     const h = circleHandles({
-      r1: c.data.outerRadius || c.data.radius,
-      r2: c.data.innerRadius,
+      r1: c.data.outerRadius * scale || c.data.radius * scale,
+      r2: c.data.innerRadius * scale,
       padding: subjectData.radiusPadding
     })
 
     const updateRadius = attr => {
-      const r = subjectData[attr] + event.dx * Math.sqrt(2) * type.transform[0]
+      const r = subjectData[attr] + event.dx * Math.sqrt(2)
       subjectData[attr] = r
       type.redrawSubject()
       type.redrawConnector()

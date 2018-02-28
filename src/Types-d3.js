@@ -294,7 +294,11 @@ export class Type {
   setOffset() {
     if (this.note) {
       const offset = this.annotation.offset
-      this.note.attr("transform", `translate(${offset.x}, ${offset.y})`)
+      const scale = this.transform[0]
+      let { x, y } = offset
+      x *= scale
+      y *= scale
+      this.note.attr("transform", `translate(${x}, ${y})`)
     }
   }
 
@@ -346,8 +350,9 @@ export class Type {
 
   dragNote() {
     const offset = this.annotation.offset
-    offset.x += event.dx
-    offset.y += event.dy
+    const scale = this.transform[0]
+    offset.x += event.dx / scale
+    offset.y += event.dy / scale
     this.annotation.offset = offset
   }
 
@@ -537,12 +542,12 @@ export const d3Badge = customType(Type, {
   disable: ["connector", "note"]
 })
 
-export const d3CalloutCircle = customType(d3CalloutElbow, {
+export const d3CalloutCircle = customType(d3Callout, {
   className: "callout circle",
   subject: { type: "circle" }
 })
 
-export const d3CalloutRect = customType(d3CalloutElbow, {
+export const d3CalloutRect = customType(d3Callout, {
   className: "callout rect",
   subject: { type: "rect" }
 })

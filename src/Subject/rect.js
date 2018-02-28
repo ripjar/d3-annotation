@@ -9,28 +9,30 @@ export default ({ subjectData, type }) => {
     subjectData.height = 100
   }
 
+  const scale = type.transform ? type.transform[0] : 1
+
   let handles = []
   let { width, height } = subjectData
 
-  const data = [[0, 0], [width, 0], [width, height], [0, height], [0, 0]]
-  let rect = lineBuilder({ data, className: "subject" })
+  const data = [[0, 0], [width * scale, 0], [width * scale, height * scale], [0, height * scale], [0, 0]]
+  let rect = lineBuilder({ data, className: "subject", transform: type.transform })
 
   if (type.editMode) {
     const updateWidth = () => {
-      subjectData.width = subjectData.width + event.dx * type.transform[0]
+      subjectData.width = subjectData.width + event.dx
       type.redrawSubject()
       type.redrawConnector()
     }
 
     const updateHeight = () => {
-      subjectData.height = subjectData.height + event.dy * type.transform[0]
+      subjectData.height = subjectData.height + event.dy
       type.redrawSubject()
       type.redrawConnector()
     }
 
     const rHandles = [
-      { x: width, y: height / 2, drag: updateWidth.bind(type) },
-      { x: width / 2, y: height, drag: updateHeight.bind(type) }
+      { x: width * scale, y: height / 2 * scale, drag: updateWidth.bind(type) },
+      { x: width / 2 * scale, y: height * scale, drag: updateHeight.bind(type) }
     ]
 
     handles = type.mapHandles(rHandles)
