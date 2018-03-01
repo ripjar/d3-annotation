@@ -71,6 +71,8 @@ export default function annotation() {
 
       a.attr("class", "annotation")
       a.attr("id", d.id);
+      a.attr("stroke-width", d.strokeWidth);
+      a.attr("stroke-linecap", "round");
 
       newWithClass(a, [d], "g", "annotation-connector")
       newWithClass(a, [d], "g", "annotation-subject")

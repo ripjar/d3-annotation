@@ -14,7 +14,8 @@ export default class Annotation {
     note,
     disable,
     id,
-    className
+    className,
+    strokeWidth
   }) {
     this._dx = nx !== undefined ? nx - x : dx
     this._dy = ny !== undefined ? ny - y : dy
@@ -32,6 +33,7 @@ export default class Annotation {
     this.subject = subject || {}
 
     this.disable = disable || []
+    this.strokeWidth = strokeWidth || 1
   }
 
   updatePosition() {

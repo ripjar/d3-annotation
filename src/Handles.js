@@ -80,6 +80,7 @@ export const addHandles = ({ group, handles, r = 10 }) => {
     .attr("cursor", "move")
     .attr("stroke-dasharray", 5)
     .attr("stroke", "grey")
+    .attr("stroke-width", 1)
     .call(
       drag()
         .container(select("g.annotations").node())

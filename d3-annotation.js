@@ -156,7 +156,8 @@ var Annotation = function () {
         note = _ref.note,
         disable = _ref.disable,
         id = _ref.id,
-        className = _ref.className;
+        className = _ref.className,
+        strokeWidth = _ref.strokeWidth;
     classCallCheck(this, Annotation);
 
     this._dx = nx !== undefined ? nx - x : dx;
@@ -175,6 +176,7 @@ var Annotation = function () {
     this.subject = subject || {};
 
     this.disable = disable || [];
+    this.strokeWidth = strokeWidth || 1;
   }
 
   createClass(Annotation, [{
@@ -501,7 +503,7 @@ var addHandles = function addHandles(_ref5) {
   //then give it instructions on what the handles change
   var h = group.selectAll("circle.handle").data(handles);
 
-  h.enter().append("circle").attr("class", "handle").attr("fill", "grey").attr("fill-opacity", 0.1).attr("cursor", "move").attr("stroke-dasharray", 5).attr("stroke", "grey").call(d3Drag.drag().container(d3Selection.select("g.annotations").node()).on("start", function (d) {
+  h.enter().append("circle").attr("class", "handle").attr("fill", "grey").attr("fill-opacity", 0.1).attr("cursor", "move").attr("stroke-dasharray", 5).attr("stroke", "grey").attr("stroke-width", 1).call(d3Drag.drag().container(d3Selection.select("g.annotations").node()).on("start", function (d) {
     return d.start && d.start(d);
   }).on("drag", function (d) {
     return d.drag && d.drag(d);
@@ -1925,6 +1927,8 @@ function annotation() {
 
       a.attr("class", "annotation");
       a.attr("id", d.id);
+      a.attr("stroke-width", d.strokeWidth);
+      a.attr("stroke-linecap", "round");
 
       newWithClass(a, [d], "g", "annotation-connector");
       newWithClass(a, [d], "g", "annotation-subject");
