@@ -496,7 +496,7 @@ export class d3NoteText extends Type {
 
         // Windows hates Montserrat in the title: the bounding boxes go absolutely crazy. No clue why.
         // Use a safe system font instead. Pull in the letter spacing to make it look close to Montserrat
-        title.attr("font-family", "Verdana")
+        title.attr("font-family", "Verdana, sans-serif")
         title.attr("style", "letter-spacing: -0.333px")
 
         title.call(wrap, wrapLength, wrapSplitter)
