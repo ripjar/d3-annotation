@@ -1709,6 +1709,12 @@ var d3NoteText = function (_Type) {
           title.text(this.annotation.note.title);
           title.attr("fill", this.annotation.color);
           title.attr("font-weight", "bold");
+
+          // Windows hates Montserrat in the title: the bounding boxes go absolutely crazy. No clue why.
+          // Use a safe system font instead. Pull in the letter spacing to make it look close to Montserrat
+          title.attr("font-family", "Verdana, sans-serif");
+          title.attr("style", "letter-spacing: -0.333px");
+
           title.call(wrap, wrapLength, wrapSplitter);
           titleBBox = title.node().getBBox();
         }
